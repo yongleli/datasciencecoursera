@@ -1,0 +1,55 @@
+## Test of gaussian process regression. 5 data points total.
+
+import numpy as np
+
+print "Hello!"
+import matplotlib.pyplot as plt
+#from sklearn.gaussian_process import GaussianProcess
+from sklearn import datasets
+from sklearn.gaussian_process import GaussianProcess
+from sklearn.cross_validation import cross_val_score, KFold
+
+mpl.rc('font',family='Times New Roman',size='16')
+
+X = np.zeros((5,1))
+X[0,0]=1.0
+X[1,0]=1.2
+X[2,0]=3.2
+X[3,0]=4.0
+X[4,0]=5.1
+
+Y=np.zeros(5)
+Y[0]=23
+Y[1]=17
+Y[2]=12
+Y[3]=27
+Y[4]=8
+
+#diabetes = datasets.load_diabetes()
+#X, Y = diabetes.data, diabetes.target
+#gp = GaussianProcess(regr='constant', corr='absolute_exponential',
+#                     theta0=[1e-4] * 10, thetaL=[1e-12] * 10,
+#                     thetaU=[1e-2] * 10, nugget=1e-2, optimizer='Welch')
+
+gp = GaussianProcess(corr='squared_exponential')
+
+print "==="
+for i in range(5):
+    print X[i,0],Y[i]
+gp.fit(X,Y)
+
+X_tmp=np.zeros((61,1))
+for i in range(61):
+    X_tmp[i,0]=i*0.1
+
+y_pred, dy_pred =gp.predict(X_tmp,eval_MSE=True)
+plt.plot(X,Y,'o')
+#plt.plot(X_tmp,y_pred,'-')
+plt.errorbar(X_tmp, y_pred, yerr=dy_pred)
+#plt.show()
+plt.axis([0,6,-95,70])
+fig = plt.figure(1,figsize=(7,4))
+filename = "learn_gp.png"
+plt.tight_layout()
+
+plt.savefig(filename, dpi = 300)
